@@ -81,6 +81,24 @@ After the script runs, open the output file:
 output/schedule_movement_results.csv
 ```
 
+## How to run tests
+
+This project includes a small test file for the core workday movement calculation.
+
+Run the tests from the project root:
+
+```powershell
+python -m unittest discover -s tests
+```
+
+The tests cover:
+
+- Unchanged dates
+- Delayed dates
+- Accelerated dates
+- Weekend handling
+- Holiday handling
+
 ## Business use case
 
 In a project controls environment, schedule updates are often reviewed weekly or monthly. A project manager, scheduler, or analyst may need to know which milestones moved, whether they moved earlier or later, and which changes are large enough to require attention.
