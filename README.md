@@ -13,6 +13,14 @@ The tool calculates:
 - Movement direction: delayed, accelerated, or unchanged
 - Variance category: no change, minor, moderate, or major
 
+Before running the analysis, the script also validates the input file for:
+
+- Required input columns
+- Blank values in the schedule date fields
+- Invalid date formats in the schedule date fields
+
+If the input file has an issue, the script shows a friendly error message instead of a long pandas traceback.
+
 ## Why I built it
 
 Project controls teams often need to compare schedule updates over time and quickly identify which milestones moved, how far they moved, and which changes are most important.
@@ -101,7 +109,7 @@ I used ChatGPT as a learning partner while building this project. It helped me:
 
 I will use Codex to continue improving the project directly in the codebase. Planned Codex-assisted work includes:
 
-- Adding input validation for missing columns and invalid dates
+- Refining input validation as the project grows
 - Moving holidays into a separate configuration file
 - Adding command-line options for custom input and output files
 - Writing simple tests for the workday calculation logic
