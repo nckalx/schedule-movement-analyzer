@@ -11,6 +11,15 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 INPUT_FILE = BASE_DIR / "data" / "sample_schedule.csv"
 OUTPUT_FILE = BASE_DIR / "output" / "schedule_movement_results.csv"
 
+REQUIRED_COLUMNS = [
+    "Project ID",
+    "Project Name",
+    "Milestone ID",
+    "Milestone Name",
+    "Original Schedule Date",
+    "New Schedule Date",
+]
+
 
 # Example company holidays.
 # We can expand this later or move it to a separate CSV/config file.
@@ -27,6 +36,58 @@ HOLIDAYS = {
         "02/16/2026",
     ]
 }
+
+
+def validate_schedule_data(schedule_df):
+    """Check the input file before running the schedule analysis."""
+    missing_columns = [
+        column for column in REQUIRED_COLUMNS if column not in schedule_df.columns
+    ]
+
+    if missing_columns:
+        missing_column_list = "\n".join(f"- {column}" for column in missing_columns)
+
+        raise SystemExit(
+            "Input validation failed: the input CSV is missing required columns.\n\n"
+            f"Missing columns:\n{missing_column_list}\n\n"
+            "Please update the input file and run the analyzer again."
+        )
+
+    date_columns = ["Original Schedule Date", "New Schedule Date"]
+
+    for column in date_columns:
+        # CSV row numbers start at 2 because row 1 contains the column headers.
+        blank_rows = schedule_df[
+            schedule_df[column].isna()
+            | (schedule_df[column].astype(str).str.strip() == "")
+        ].index + 2
+
+        if len(blank_rows) > 0:
+            blank_row_list = ", ".join(str(row_number) for row_number in blank_rows)
+
+            raise SystemExit(
+                f"Input validation failed: '{column}' has blank date values "
+                f"on CSV row(s): {blank_row_list}.\n\n"
+                "Please fill in the missing dates and run the analyzer again."
+            )
+
+        parsed_dates = pd.to_datetime(
+            schedule_df[column],
+            format="%m/%d/%Y",
+            errors="coerce",
+        )
+
+        invalid_rows = schedule_df[parsed_dates.isna()].index + 2
+
+        if len(invalid_rows) > 0:
+            invalid_row_list = ", ".join(str(row_number) for row_number in invalid_rows)
+
+            raise SystemExit(
+                f"Input validation failed: '{column}' has invalid dates "
+                f"on CSV row(s): {invalid_row_list}.\n\n"
+                "Please use MM/DD/YYYY format, such as 10/17/2025, "
+                "and run the analyzer again."
+            )
 
 
 def count_workdays_moved(original_date, new_date):
@@ -95,6 +156,8 @@ def main():
     print(f"Reading schedule data from: {INPUT_FILE}")
 
     schedule_df = pd.read_csv(INPUT_FILE)
+
+    validate_schedule_data(schedule_df)
 
     schedule_df["Original Schedule Date"] = pd.to_datetime(
         schedule_df["Original Schedule Date"],
