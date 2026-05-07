@@ -139,7 +139,23 @@ def main():
 
     schedule_df.to_csv(OUTPUT_FILE, index=False)
 
-    print(f"Analysis complete.")
+    total_milestones = len(schedule_df)
+    delayed_milestones = (schedule_df["Movement Direction"] == "Delayed").sum()
+    accelerated_milestones = (
+        schedule_df["Movement Direction"] == "Accelerated"
+    ).sum()
+    unchanged_milestones = (schedule_df["Movement Direction"] == "Unchanged").sum()
+    major_variances = (schedule_df["Variance Category"] == "Major").sum()
+
+    print("Analysis complete.")
+    print()
+    print("Summary:")
+    print(f"Total milestones analyzed: {total_milestones}")
+    print(f"Delayed milestones: {delayed_milestones}")
+    print(f"Accelerated milestones: {accelerated_milestones}")
+    print(f"Unchanged milestones: {unchanged_milestones}")
+    print(f"Major variances: {major_variances}")
+    print()
     print(f"Results saved to: {OUTPUT_FILE}")
 
 
