@@ -81,6 +81,12 @@ After the script runs, open the output file:
 output/schedule_movement_results.csv
 ```
 
+## Example terminal output
+
+The screenshot below shows the console summary after the analyzer runs. It gives a quick count of analyzed milestones, movement directions, and major variances.
+
+![Console summary after running the schedule movement analyzer](assets/console-summary.png)
+
 ## How to run tests
 
 This project includes a small test file for the core workday movement calculation.
